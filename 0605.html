@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Chosen Palette: Calm Harmony (Adapted with Blues, Greens, Reds, and Grays) -->
+    <!-- Application Structure Plan: The application is structured as a thematic narrative dashboard. It starts with a high-level overview (New Government Vision & Inaugural Actions), then delves into key economic pillars (Real Estate, Future Growth Engines like Nuclear, Semiconductor, Bio/Robot, OLED), analyzes current market dynamics (Inflation, Trade, Fintech, IT, Aviation, Shipbuilding), and social/future policies (Low Birth Rate, Education). It concludes with a synthesized view of investment opportunities and risks. This thematic flow is more intuitive for understanding economic impact than a structure mirroring the newspaper's page layout, guiding the user from macro policy to specific industry implications and investment insights. -->
+    <!-- Visualization & Content Choices: The application uses a variety of visualizations chosen for their clarity in presenting economic data. KPI-style cards (Inform) are used for key metrics like approval ratings and inflation. HTML/CSS-based process diagrams (Organize) illustrate real estate policy impacts and the President's first day. Chart.js (Canvas) is used for Bar charts (Compare industry potential, fintech competition, construction trends), Line charts (Show trends in semiconductors), and Donut charts (Compare market shares). Interactive tabs (Organize, Compare) are used for foreign policy reactions. Detailed textual summaries are provided for specific company news and social policies. All visualizations are built with Canvas or styled HTML/CSS, strictly avoiding SVG and Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 대한민국 경제 대시보드 - 매일경제신문 심층분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-800 */
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .kpi-box {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+        .flow-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        .flow-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            min-height: 100px;
+            flex-shrink: 0;
+            flex-grow: 1;
+            margin: 0.5rem;
+        }
+        .flow-arrow {
+            color: #3b82f6; /* blue-500 */
+            font-size: 2rem;
+            margin: 0 0.5rem;
+            align-self: center;
+            line-height: 1;
+        }
+        @media (max-width: 767px) {
+            .flow-container {
+                flex-direction: column;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px; /* Default height */
+            max-height: 400px; /* Max height to prevent excessive size */
+            max-width: 600px; /* Max width for readability */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px; /* Slightly taller on desktop */
+            }
+        }
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            background-color: #e2e8f0; /* slate-200 */
+            color: #475569; /* slate-600 */
+        }
+        .tab-button.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            background-color: #f8fafc;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-blue-600 mb-2">2025 대한민국 경제 대시보드</h1>
+            <p class="text-md md:text-lg text-slate-600">매일경제신문 6월 5일자 심층 분석 및 대화형 탐색</p>
+        </header>
+
+        <div class="grid grid-cols-1 gap-8">
+
+            <section id="government-vision" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">새 정부의 국정 비전: 실용주의와 민생 중심</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">2025년 6월 4일 취임한 이재명 제21대 대통령은 '실용적 시장주의'와 '기업 성장 뒷받침'을 강조하며 경제 활성화와 국민 통합을 최우선 과제로 내세웠습니다. '역사니즘(먹고사는 문제 해결)'과 '잘사니즘(모두 함께 잘사는 세상)'을 통해 이념을 넘어선 실용 노선을 천명했습니다.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
+                    <div class="kpi-box bg-blue-50">
+                        <h3 class="text-lg font-semibold text-blue-700">취임사 최다 언급 단어</h3>
+                        <p class="text-5xl font-bold text-blue-600 my-2">국민 <span class="text-3xl">(42회)</span></p>
+                        <p class="text-sm text-slate-500">국정 철학의 근간이 '국민'임을 강조</p>
+                    </div>
+                    <div class="kpi-box bg-blue-50">
+                        <h3 class="text-lg font-semibold text-blue-700">핵심 국정 키워드</h3>
+                        <p class="text-5xl font-bold text-blue-600 my-2">성장 <span class="text-3xl">(21회)</span></p>
+                        <p class="text-sm text-slate-500">경제 활성화에 대한 강력한 의지</p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4 text-center">취임 첫날 주요 행보</h3>
+                <p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">이재명 대통령은 취임 첫날부터 비상경제점검 TF 가동, 내각 인선 발표 등 숨가쁜 일정을 소화하며 국정 운영에 대한 강한 의지를 보여주었습니다.</p>
+                <div class="flow-container max-w-4xl mx-auto">
+                    <div class="flow-item bg-slate-100">
+                        <span class="text-2xl mb-1">🏛️</span>
+                        <p class="font-semibold text-slate-700">국립서울현충원 참배</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-slate-100">
+                        <span class="text-2xl mb-1">✍️</span>
+                        <p class="font-semibold text-slate-700">국회 취임선서</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-slate-100">
+                        <span class="text-2xl mb-1">🤝</span>
+                        <p class="font-semibold text-slate-700">내각 인선 발표</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-slate-100">
+                        <span class="text-2xl mb-1">🛡️</span>
+                        <p class="font-semibold text-slate-700">군사 대비태세 점검</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-slate-100">
+                        <span class="text-2xl mb-1">📈</span>
+                        <p class="font-semibold text-slate-700">비상경제 TF 회의</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="real-estate-policy" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">부동산 시장: 규제 완화와 새로운 과제</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">새 정부는 다주택자의 '순기능'을 인정하고 규제 및 세금 완화를 시사하며 부동산 시장 활성화를 모색합니다. 이는 전월세 시장 안정화와 건설 경기 부양을 목표로 합니다. 하지만 도시 개발 과정에서 군사시설 보호와 고층화 정책 간의 갈등 등 새로운 이슈도 부상하고 있습니다.</p>
+
+                <h3 class="text-xl font-bold mb-4 text-center">부동산 정책 변화 흐름</h3>
+                <div class="flow-container max-w-4xl mx-auto mb-6">
+                    <div class="flow-item bg-blue-50">
+                        <p class="font-semibold text-blue-700">다주택자 순기능 인정</p>
+                        <p class="text-sm text-slate-600 mt-1">임대 주택 공급 확대</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-green-50">
+                        <p class="font-semibold text-green-700">규제 및 세금 완화 시사</p>
+                        <p class="text-sm text-slate-600 mt-1">취득세, 양도세, 종부세 등</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item bg-purple-50">
+                        <p class="font-semibold text-purple-700">시장 활성화 기대</p>
+                        <p class="text-sm text-slate-600 mt-1">거래량 증가, 건설 경기 부양</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="kpi-box bg-slate-100">
+                        <h3 class="text-lg font-semibold text-slate-700">경기도 아파트 매매가 상승률 (5월)</h3>
+                        <p class="text-5xl font-bold text-green-600 my-2">0.16<span class="text-3xl">%</span></p>
+                        <p class="text-sm text-slate-500">서울 집값 부담, 금리 인하 기대감 영향</p>
+                    </div>
+                    <div class="kpi-box bg-slate-100">
+                        <h3 class="text-lg font-semibold text-slate-700">용산국제업무지구 개발</h3>
+                        <p class="text-4xl font-bold text-blue-600 my-2">시민 참여형 <br>'지역상생리츠' 검토</p>
+                        <p class="text-sm text-slate-500">2027년 시범사업 추진 계획</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="future-industries" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">미래 성장 동력: 핵심 산업의 기회와 도전</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">새 정부는 바이오·로봇, 반도체, 원전 등 핵심 산업에 대한 지원을 강화하며 미래 성장 동력을 확보하려 합니다. 각 산업별로 새로운 기회와 함께 글로벌 경쟁 및 정책 변화에 따른 도전 과제도 직면하고 있습니다.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">원전 산업: 유럽 시장 진출 쾌거</h3>
+                        <div class="kpi-box bg-green-50">
+                            <p class="text-5xl font-bold text-green-700 my-2">25조 원</p>
+                            <p class="text-lg font-semibold text-slate-700">체코 두코바니 신규 원전 수출 계약</p>
+                            <p class="text-sm text-slate-500 mt-2">16년 만의 유럽 시장 진출, 향후 50조 원 이상 기대</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">반도체 산업: 글로벌 경쟁 심화</h3>
+                        <p class="text-sm text-slate-600 text-center mb-4">미·중의 최첨단 반도체 개발 속도전에 한국은 '반도체특별법' 통과 및 직접 보조금, 세제 혜택 등 강력한 지원이 시급합니다.</p>
+                        <div class="chart-container">
+                            <canvas id="semiconductorGrowthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">바이오 & 로봇 산업</h3>
+                        <p class="text-sm text-slate-600 text-center mb-4">정부의 규제 완화 기조는 민간 투자를 촉진하여 바이오 및 로봇 산업의 성장을 가속화할 것입니다.</p>
+                        <div class="chart-container">
+                            <canvas id="bioRobotPotentialChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">프리미엄 TV 시장 (OLED)</h3>
+                        <p class="text-sm text-slate-600 text-center mb-4">삼성전자의 QD-OLED TV 시장 본격 진출로 프리미엄 TV 시장의 판도가 변화하고 있습니다.</p>
+                        <div class="chart-container">
+                            <canvas id="oledMarketShareChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="market-dynamics" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">주요 시장 동향 및 대외 환경 변화</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">물가 안정화 조짐과 함께 유통업계는 소비 진작에 나서고 있으며, 철강 산업은 미국의 관세 인상으로 큰 타격을 받고 있습니다. 항공, 조선, 핀테크 등 다양한 산업에서도 역동적인 변화가 나타나고 있습니다.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">소비자 물가 상승률 (5월)</h3>
+                        <div class="kpi-box bg-slate-100">
+                            <p class="text-5xl font-bold text-green-600 my-2">1.9<span class="text-3xl">%</span></p>
+                            <p class="text-lg font-semibold text-slate-700">5개월 만에 1%대 진입</p>
+                            <p class="text-sm text-slate-500 mt-2">농산물 및 국제유가 하락 영향, 체감 물가는 여전히 높아</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">철강 산업: 미국 관세 인상 직격탄</h3>
+                        <p class="text-sm text-slate-600 text-center mb-4">트럼프 행정부의 관세 50% 인상으로 대미 수출 급감. 국내 철강업계 '멘붕' 상태.</p>
+                        <div class="chart-container">
+                            <canvas id="steelExportChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4 text-center">주요 산업별 동향</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h4 class="font-bold text-lg text-slate-700 mb-2">항공 산업</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>조원태 한진그룹 회장, 미국 관세 압력 보호 대책 촉구</li>
+                            <li>한국산 항공유 미국 수출 4년 만에 최대치 (430만 배럴)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h4 class="font-bold text-lg text-slate-700 mb-2">조선 산업</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>한화오션, 초대형 암모니아선 개발 선언</li>
+                            <li>친환경 선박 기술 주도권 확보 노력</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h4 class="font-bold text-lg text-slate-700 mb-2">핀테크 및 IT</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>웹케시그룹, '금융 AI 에이전트'로 전환 선언 ('AI CFO' 서비스)</li>
+                            <li>SK텔레콤, 해킹 사태 후 가입자 41만 명 이상 이탈</li>
+                            <li>삼성전자, 7월 '갤럭시 폴드7' 공개 예정 (초슬림, 초경량, 대화면)</li>
+                            <li>크래프톤, 인도 'BGMI' 성공적 현지화로 국민 게임 등극</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h4 class="font-bold text-lg text-slate-700 mb-2">라면 산업</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>새 정부 '내수 살리기' 기조 수혜 기대</li>
+                            <li>필수소비재 특성상 경기 방어적, 해외 선전 지속</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4 text-center">주요국 대외 정책 반응</h3>
+                <p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">이재명 대통령 취임에 대해 미국, 중국, 일본 등 주요국은 각기 다른 반응을 보이며 한국의 외교적 스탠스에 대한 기대와 견제를 드러냈습니다.</p>
+                <div class="flex justify-center space-x-2 mb-4">
+                    <button class="tab-button active" onclick="openTab(event, 'us-policy')">미국</button>
+                    <button class="tab-button" onclick="openTab(event, 'china-policy')">중국</button>
+                    <button class="tab-button" onclick="openTab(event, 'japan-policy')">일본</button>
+                </div>
+
+                <div id="us-policy" class="tab-content active">
+                    <h4 class="font-bold text-lg text-slate-700 mb-2">미국: 축하와 견제</h4>
+                    <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                        <li>백악관, 당선 축하와 함께 "중국의 개입과 영향력 행사에 우려" 표명</li>
+                        <li>트럼프 행정부, 한·미·중 '양다리 외교' 불용 입장 시사</li>
+                        <li>폴 크루그먼 교수, 트럼프 무역협상에 "피해 최소화, 제2·3카드 준비" 조언</li>
+                        <li>반도체 등 핵심 산업 관세 부과 시 비용 증가 및 경쟁력 약화 경고</li>
+                    </ul>
+                </div>
+                <div id="china-policy" class="tab-content">
+                    <h4 class="font-bold text-lg text-slate-700 mb-2">중국: 우호 강조와 반발</h4>
+                    <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                        <li>시진핑 주석, 축전 통해 "가까운 이웃이자 중요한 파트너" 강조</li>
+                        <li>백악관 중국 관련 발언에 대해 중국 외교부 "이간질 말라" 강하게 반발</li>
+                    </ul>
+                </div>
+                <div id="japan-policy" class="tab-content">
+                    <h4 class="font-bold text-lg text-slate-700 mb-2">일본: 관계 개선 의지</h4>
+                    <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                        <li>이시바 시게루 총리, 당선 축하 및 한일 정상회담 조속 추진 의사 표명</li>
+                        <li>이재명 대통령, '실용 외교' 기조 강조, 윤석열 정부 강제징용 해법 및 '김대중-오부치 선언' 계승 의사 피력</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="social-policy" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">사회 정책: 저출생과 교육의 미래</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">이재명 정부는 저출생 문제 해결을 위한 '빅푸시' 전략과 함께, 사교육세 신설을 통한 재원 마련을 검토하고 있습니다. 또한, AI 디지털 교과서 정책에 대한 변화 가능성으로 관련 업계의 우려가 커지고 있습니다.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h3 class="font-bold text-lg text-slate-700 mb-2">저출생 정책 방향</h3>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>'빅푸시' 전략을 통한 다자녀 가정 경제적 지원 증대</li>
+                            <li>사교육세 신설 검토 (재원 마련 목적)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h3 class="font-bold text-lg text-slate-700 mb-2">AI 디지털 교과서 정책</h3>
+                        <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                            <li>이재명 대통령 '교육 자료' 규정 공약에 따라 '풍전등화' 위기</li>
+                            <li>개발 업체들, 정부 정책 혼선으로 인한 투자 손실 우려</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="investment-outlook" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">주가 영향 분석: 기회와 리스크 요인 종합</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">2025년 6월 5일자 매일경제신문 기사들을 종합적으로 분석한 결과, 새 정부의 정책 방향과 대내외 경제 환경 변화가 각 산업군의 주가에 미칠 영향은 다음과 같습니다.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                    <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-3">긍정적 영향 가능성 높은 산업</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li><b>건설 및 부동산 관련주:</b> 규제 완화 및 경기 부양 기대</li>
+                            <li><b>원전 관련주:</b> 체코 원전 수출 성사로 '팀 코리아' 기업들 수혜</li>
+                            <li><b>바이오 및 로봇 관련주:</b> 정부 규제 완화 및 투자 촉진 기조</li>
+                            <li><b>반도체 관련주:</b> '반도체특별법' 추진 및 산업 지원 강화</li>
+                            <li><b>친환경 에너지/조선 관련주:</b> 친환경 선박 기술 주도권 확보 노력</li>
+                            <li><b>라면 관련주:</b> 내수 살리기 기조 및 경기 방어적 특성</li>
+                            <li><b>AI 및 핀테크 관련주:</b> AI 기술 활용 서비스 도입 및 성장</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-red-700 mb-3">부정적 영향 가능성 높은 산업</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li><b>철강 관련주:</b> 미국 트럼프 행정부의 관세 50% 인상 직격탄</li>
+                            <li><b>AI 디지털 교과서 관련 업체:</b> 정부 정책 혼선으로 사업 좌초 우려</li>
+                            <li><b>통신사 (SK텔레콤):</b> 대규모 해킹 사태로 인한 가입자 이탈</li>
+                        </ul>
+                    </div>
+                    <div class="md:col-span-2 border-l-4 border-orange-500 bg-orange-50 p-4 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-orange-700 mb-3">중간 또는 복합적 영향 산업</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li><b>금융주:</b> 간편결제 경쟁 심화 vs 부동산 대출 증가 상충</li>
+                            <li><b>지주사:</b> 코스피 5000 공약 및 상법 개정 기대 vs 단기 실적 미반영</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="recommendations" class="card">
+                <h2 class="text-2xl font-bold mb-4 text-center">종합 결론 및 권고사항</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">새 정부의 경제 활성화 의지와 미래 성장 산업 지원은 긍정적이나, 대외 환경 불확실성과 정책 일관성 문제는 리스크로 작용합니다. 투자자는 기회와 리스크를 종합적으로 고려한 신중한 접근이 필요합니다.</p>
+
+                <ul class="list-decimal list-inside space-y-3 text-slate-700 text-lg max-w-4xl mx-auto">
+                    <li><b>정부 정책 수혜 산업 집중 투자:</b> 부동산, 원전, 바이오, 로봇, 반도체 등 정부 정책의 직접적인 수혜가 예상되는 산업군의 선두 기업을 면밀히 분석하여 투자 기회를 모색하십시오.</li>
+                    <li><b>수출 중심 기업의 대외 환경 리스크 관리:</b> 철강과 같이 대외 관세 정책에 직접적인 영향을 받는 산업에 투자할 경우, 기업의 리스크 관리 능력과 정부의 대응 전략을 주시해야 합니다. 공급망 다변화 및 리스크 헤지 전략을 고려하십시오.</li>
+                    <li><b>내수 및 필수소비재의 안정성 활용:</b> 시장 불확실성 속에서 라면과 같은 필수소비재 및 내수 중심 기업들은 상대적으로 안정적인 주가 흐름을 보일 수 있으므로, 방어적 투자 포트폴리오 구성 시 고려할 수 있습니다.</li>
+                    <li><b>기술 혁신 및 AI 도입 기업 관심:</b> AI 기술을 적극적으로 도입하고 새로운 비즈니스 모델을 창출하는 기업들은 장기적인 성장 잠재력을 가지고 있으므로 지속적인 관심이 필요합니다.</li>
+                    <li><b>정부 정책의 구체화 및 일관성 모니터링:</b> 언급된 정책들이 실제 입법 및 집행 과정에서 어떻게 구체화되고 일관성을 유지하는지 지속적으로 모니터링하여 투자 판단에 반영해야 합니다.</li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        const chartTooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            }
+            return label;
+        };
+        
+        const chartDefaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                        padding: 20,
+                    },
+                },
+                tooltip: {
+                    callbacks: { title: chartTooltipTitleCallback },
+                    bodyFont: { family: "'Noto Sans KR', sans-serif" },
+                    titleFont: { family: "'Noto Sans KR', sans-serif" }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { font: { size: 10, family: "'Noto Sans KR', sans-serif" } } },
+                x: { ticks: { font: { size: 10, family: "'Noto Sans KR', sans-serif" } } }
+            },
+            layout: { padding: 10 }
+        };
+
+        const wrapLabel = (str, maxWidth = 16) => {
+            if (typeof str !== 'string') return str;
+            if (str.length <= maxWidth) return str;
+            const words = str.split(' ');
+            let lines = [];
+            let currentLine = words[0];
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + words[i].length + 1 < maxWidth) {
+                    currentLine += " " + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        };
+
+        new Chart(document.getElementById('semiconductorGrowthChart'), {
+            type: 'line',
+            data: {
+                labels: ['2023', '2024', '2025(E)', '2026(E)', '2027(E)'],
+                datasets: [{
+                    label: '비메모리 반도체 생산량 지수 (가상)',
+                    data: [100, 110, 125, 145, 170],
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: '#3b82f6',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointRadius: 4,
+                }]
+            },
+            options: chartDefaultOptions
+        });
+
+        new Chart(document.getElementById('bioRobotPotentialChart'), {
+            type: 'bar',
+            data: {
+                labels: ['바이오 의약품', '의료·서비스 로봇', wrapLabel('AI 신약 개발 플랫폼'), '스마트 팩토리 로봇'],
+                datasets: [{
+                    label: '성장 잠재력 (점수, 가상)',
+                    data: [85, 90, 78, 82],
+                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }]
+            },
+            options: chartDefaultOptions
+        });
+
+        new Chart(document.getElementById('oledMarketShareChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['삼성전자 (QD-OLED)', '기존 OLED TV 제조사', '기타 프리미엄 TV'],
+                datasets: [{
+                    label: '프리미엄 TV 시장 점유율 전망 (가상)',
+                    data: [35, 55, 10],
+                    backgroundColor: ['#1d4ed8', '#3b82f6', '#93c5fd'],
+                    hoverOffset: 8,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                }]
+            },
+            options: { ...chartDefaultOptions, cutout: '60%', plugins: { ...chartDefaultOptions.plugins, legend: { position: 'right' } } }
+        });
+
+        new Chart(document.getElementById('steelExportChart'), {
+            type: 'bar',
+            data: {
+                labels: ['5월 (1-25일)'],
+                datasets: [{
+                    label: '대미 철강 수출 감소율',
+                    data: [-20.6],
+                    backgroundColor: '#ef4444',
+                    borderColor: '#b91c1c',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }]
+            },
+            options: { ...chartDefaultOptions, scales: { y: { beginAtZero: false, ticks: { callback: function(value) { return value + '%'; }, font: { size: 10, family: "'Noto Sans KR', sans-serif" } } } }, plugins: { ...chartDefaultOptions.plugins, legend: { display: false } } }
+        });
+
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
