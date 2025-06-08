@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40대 여성을 위한 럭셔리 슈즈 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FFFFEA;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 600px;
+        }
+        .flowchart-box {
+            border: 2px solid #00CECB;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            background-color: white;
+            transition: all 0.3s ease;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flowchart-arrow {
+            position: relative;
+            text-align: center;
+            font-size: 2rem;
+            color: #FF5E5B;
+        }
+        .flowchart-arrow::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -2rem;
+            bottom: -2rem;
+            width: 2px;
+            background-color: #D8D8D8;
+            z-index: -1;
+        }
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 1rem;
+            grid-template-areas:
+                "strength weakness"
+                "opportunity threat";
+        }
+        .swot-strength { grid-area: strength; background-color: rgba(0, 206, 203, 0.1); border-left: 5px solid #00CECB;}
+        .swot-weakness { grid-area: weakness; background-color: rgba(255, 94, 91, 0.1); border-left: 5px solid #FF5E5B;}
+        .swot-opportunity { grid-area: opportunity; background-color: rgba(0, 206, 203, 0.1); border-left: 5px solid #00CECB;}
+        .swot-threat { grid-area: threat; background-color: rgba(255, 94, 91, 0.1); border-left: 5px solid #FF5E5B;}
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-[#FF5E5B] mb-4">40대, 당신의 발걸음을 빛낼 슈즈는?</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">세 가지 아이코닉 럭셔리 슈즈, 골든구스 볼스타, 프라다 로퍼, 샤넬 트레이너를 심층 비교하여 당신의 라이프스타일에 가장 어울리는 완벽한 한 켤레를 찾아보세요.</p>
+        </header>
+
+        <section id="overview" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">한눈에 보는 세 가지 매력</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <div class="text-6xl mb-4">👟</div>
+                    <h3 class="text-2xl font-bold mb-2">골든구스 볼스타</h3>
+                    <p class="text-gray-500 text-lg font-semibold">#빈티지 #개성 #데일리시크</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <div class="text-6xl mb-4">👞</div>
+                    <h3 class="text-2xl font-bold mb-2">프라다 로퍼</h3>
+                    <p class="text-gray-500 text-lg font-semibold">#클래식 #우아함 #만능템</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <div class="text-6xl mb-4">✨</div>
+                    <h3 class="text-2xl font-bold mb-2">샤넬 트레이너</h3>
+                    <p class="text-gray-500 text-lg font-semibold">#럭셔리 #스포티 #브랜드가치</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="price" class="mb-20">
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-2">가격 & 투자 가치 비교</h2>
+                <p class="text-center text-gray-600 mb-8">초기 구매 비용과 잠재적 추가 비용을 함께 고려해야 합니다. 골든구스는 밑창 보강 비용이 추가될 수 있습니다.</p>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="comfort-style" class="mb-20">
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-2">편안함 vs 스타일 활용도</h2>
+                <p class="text-center text-gray-600 mb-8">당신에게 더 중요한 가치는 무엇인가요? 각 신발의 포지션을 확인해보세요.</p>
+                <div class="chart-container">
+                    <canvas id="comfortStyleChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="swot" class="mb-20">
+             <h2 class="text-3xl font-bold text-center mb-10">브랜드별 SWOT 분석</h2>
+             <div class="grid md:grid-cols-3 gap-8">
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-center">골든구스 볼스타</h3>
+                    <div class="swot-grid">
+                        <div class="swot-strength p-4 rounded-md"><strong>강점 (S)</strong><p class="text-sm">독창적인 빈티지 디자인, 상대적으로 낮은 초기 가격</p></div>
+                        <div class="swot-weakness p-4 rounded-md"><strong>약점 (W)</strong><p class="text-sm">취약한 밑창 내구성, 호불호 갈리는 착화감</p></div>
+                        <div class="swot-opportunity p-4 rounded-md"><strong>기회 (O)</strong><p class="text-sm">개성 중시 트렌드, 꾸준한 캐주얼웨어 수요</p></div>
+                        <div class="swot-threat p-4 rounded-md"><strong>위협 (T)</strong><p class="text-sm">유사 디자인의 중저가 브랜드 등장, 추가 유지보수 비용</p></div>
+                    </div>
+                 </div>
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-center">프라다 로퍼</h3>
+                     <div class="swot-grid">
+                        <div class="swot-strength p-4 rounded-md"><strong>강점 (S)</strong><p class="text-sm">시대를 초월하는 디자인, 압도적인 스타일 활용도</p></div>
+                        <div class="swot-weakness p-4 rounded-md"><strong>약점 (W)</strong><p class="text-sm">초기 길들임 필요, 스크래치에 민감한 소재</p></div>
+                        <div class="swot-opportunity p-4 rounded-md"><strong>기회 (O)</strong><p class="text-sm">'올드머니룩' 트렌드, 포멀/캐주얼 경계 약화</p></div>
+                        <div class="swot-threat p-4 rounded-md"><strong>위협 (T)</strong><p class="text-sm">높은 가격대, 섬세한 관리에 대한 부담</p></div>
+                    </div>
+                 </div>
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-center">샤넬 트레이너</h3>
+                     <div class="swot-grid">
+                        <div class="swot-strength p-4 rounded-md"><strong>강점 (S)</strong><p class="text-sm">독보적인 브랜드 가치, 우수한 착화감</p></div>
+                        <div class="swot-weakness p-4 rounded-md"><strong>약점 (W)</strong><p class="text-sm">매우 높은 가격, 전문 클리닝 필수</p></div>
+                        <div class="swot-opportunity p-4 rounded-md"><strong>기회 (O)</strong><p class="text-sm">'스포티 럭스' 트렌드 확산, 리셀 시장 활성화</p></div>
+                        <div class="swot-threat p-4 rounded-md"><strong>위협 (T)</strong><p class="text-sm">한정적인 스타일, 구매 접근성 낮음</p></div>
+                    </div>
+                 </div>
+             </div>
+        </section>
+
+        <section id="decision" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">나에게 맞는 슈즈 찾기</h2>
+            <div class="max-w-2xl mx-auto">
+                <div class="flowchart-box">
+                    <p class="text-lg font-semibold">어떤 스타일을 가장 선호하시나요?</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 my-4 items-center">
+                    <div class="flowchart-arrow">↓</div>
+                    <div class="flowchart-arrow">↓</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flowchart-box">
+                        <p>자유분방한<br><strong>캐주얼 & 스트릿</strong></p>
+                    </div>
+                    <div class="flowchart-box">
+                        <p>단정하고 우아한<br><strong>클래식 & 포멀</strong></p>
+                    </div>
+                </div>
+                 <div class="grid grid-cols-2 gap-4 my-4 items-center">
+                    <div class="flowchart-arrow">↓</div>
+                    <div class="flowchart-arrow">↓</div>
+                </div>
+                 <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center border-2 border-[#FF5E5B]">
+                       <h4 class="font-bold text-xl mb-2">골든구스 or 샤넬</h4>
+                       <p class="text-sm text-gray-600">편안한 착화감이 최우선이라면 <strong>샤넬</strong>, 개성있는 디자인이 중요하다면 <strong>골든구스</strong>를 추천합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center border-2 border-[#00CECB]">
+                       <h4 class="font-bold text-xl mb-2">프라다 로퍼</h4>
+                        <p class="text-sm text-gray-600">격식있는 자리와 일상을 모두 아우르는 높은 활용도의 신발을 찾는 당신에게 최고의 선택입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final-table" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-10">최종 비교 테이블</h2>
+            <div class="overflow-x-auto bg-white p-6 rounded-lg shadow-lg">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3 px-6">특징</th>
+                            <th scope="col" class="py-3 px-6">골든구스 볼스타</th>
+                            <th scope="col" class="py-3 px-6">프라다 로퍼</th>
+                            <th scope="col" class="py-3 px-6">샤넬 트레이너</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">가격대 (KRW)</th>
+                            <td class="py-4 px-6">약 40~60만원대</td>
+                            <td class="py-4 px-6">약 160만원대</td>
+                            <td class="py-4 px-6">약 180만원대 이상</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">핵심 키워드</th>
+                            <td class="py-4 px-6">빈티지, 개성</td>
+                            <td class="py-4 px-6">클래식, 범용성</td>
+                            <td class="py-4 px-6">럭셔리, 편안함</td>
+                        </tr>
+                         <tr class="bg-white border-b">
+                            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">유지보수 난이도</th>
+                            <td class="py-4 px-6">중간 (밑창 보강 필수)</td>
+                            <td class="py-4 px-6">중상 (가죽 관리 필요)</td>
+                            <td class="py-4 px-6">상 (전문 관리 필수)</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">추천 대상</th>
+                            <td class="py-4 px-6">개성있는 캐주얼 선호자</td>
+                            <td class="py-4 px-6">격식과 편안함 동시 추구자</td>
+                            <td class="py-4 px-6">브랜드 가치와 스포티함 중시자</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="text-center text-sm text-gray-500 mt-16">
+            <p>&copy; 2025 Luxury Shoe Analysis. All Rights Reserved.</p>
+            <p class="mt-2">본 인포그래픽은 제공된 '신발 비교 분석 및 추천' 보고서를 기반으로 제작되었습니다.
+            <br>Mermaid JS나 SVG 그래픽을 사용하지 않고 Chart.js Canvas와 HTML/CSS로 구현되었습니다.</p>
+        </footer>
+    </div>
+
+<script>
+    const defaultTooltip = {
+        callbacks: {
+            title: function(tooltipItems) {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                } else {
+                    return label;
+                }
+            }
+        }
+    };
+    
+    const colors = {
+        red: '#FF5E5B',
+        teal: '#00CECB',
+        yellow: '#FFED66',
+        grey: '#D8D8D8',
+        dark: '#374151'
+    };
+
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    new Chart(priceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['골든구스 볼스타', '프라다 로퍼', '샤넬 트레이너'],
+            datasets: [{
+                label: '기본 가격 (만원)',
+                data: [50, 160, 188],
+                backgroundColor: colors.teal,
+                borderColor: colors.teal,
+                borderWidth: 1
+            }, {
+                label: '밑창 보강 비용 (만원)',
+                data: [10, 0, 0],
+                backgroundColor: colors.red,
+                borderColor: colors.red,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '만원'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                title: { display: false },
+                legend: { position: 'top' },
+                tooltip: defaultTooltip
+            }
+        }
+    });
+
+    const comfortStyleCtx = document.getElementById('comfortStyleChart').getContext('2d');
+    new Chart(comfortStyleCtx, {
+        type: 'scatter',
+        data: {
+            labels: ['골든구스 볼스타', '프라다 로퍼', '샤넬 트레이너'],
+            datasets: [{
+                label: '골든구스 볼스타',
+                data: [{x: 6.5, y: 8}],
+                backgroundColor: colors.red,
+                pointRadius: 15,
+                pointHoverRadius: 20
+            }, {
+                label: '프라다 로퍼',
+                data: [{x: 7.5, y: 9.5}],
+                backgroundColor: colors.teal,
+                 pointRadius: 15,
+                pointHoverRadius: 20
+            }, {
+                label: '샤넬 트레이너',
+                data: [{x: 9, y: 7}],
+                backgroundColor: colors.yellow,
+                pointRadius: 15,
+                pointHoverRadius: 20
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: '편안함 지수 (Comfort)',
+                        font: { size: 14 }
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: '스타일 활용도 (Versatility)',
+                        font: { size: 14 }
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.x !== null) {
+                                label += `(편안함: ${context.parsed.x}, 활용도: ${context.parsed.y})`;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
